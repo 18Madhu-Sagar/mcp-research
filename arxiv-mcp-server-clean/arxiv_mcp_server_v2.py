@@ -122,7 +122,7 @@ def get_paper_details(arxiv_id: str) -> Dict[str, Any]:
 def analyze_paper_with_mistral(
     arxiv_id: str,
     question: str = "Provide a comprehensive analysis of this paper",
-    agent_id: str = "ag:01234567-89ab-cdef-0123-456789abcdef"
+    agent_id: str = None
 ) -> Dict[str, Any]:
     """Analyze a paper using Mistral's agents API"""
     try:
@@ -158,11 +158,21 @@ Please provide a detailed analysis addressing the question while considering:
 5. Relevance to current research trends
 """
         
+        # Use environment variable for agent ID if not provided
+        if not agent_id:
+            agent_id = os.getenv("MISTRAL_AGENT_ID")
+        
         try:
-            response = mistral_client.agents.complete(
-                agent_id=agent_id,
-                messages=[{"role": "user", "content": analysis_prompt}]
-            )
+            if agent_id:
+                response = mistral_client.agents.complete(
+                    agent_id=agent_id,
+                    messages=[{"role": "user", "content": analysis_prompt}]
+                )
+            else:
+                response = mistral_client.chat.complete(
+                    model="mistral-large-latest",
+                    messages=[{"role": "user", "content": analysis_prompt}]
+                )
         except Exception:
             response = mistral_client.chat.complete(
                 model="mistral-large-latest",
@@ -186,7 +196,7 @@ def chat_about_papers(
     message: str,
     paper_ids: List[str] = None,
     conversation_history: List[Dict[str, str]] = None,
-    agent_id: str = "ag:01234567-89ab-cdef-0123-456789abcdef"
+    agent_id: str = None
 ) -> Dict[str, Any]:
     """Have a conversation about research papers"""
     try:
@@ -222,11 +232,21 @@ Please provide helpful, accurate responses about these papers and related resear
         
         messages.append({"role": "user", "content": message})
         
+        # Use environment variable for agent ID if not provided
+        if not agent_id:
+            agent_id = os.getenv("MISTRAL_AGENT_ID")
+        
         try:
-            response = mistral_client.agents.complete(
-                agent_id=agent_id,
-                messages=messages
-            )
+            if agent_id:
+                response = mistral_client.agents.complete(
+                    agent_id=agent_id,
+                    messages=messages
+                )
+            else:
+                response = mistral_client.chat.complete(
+                    model="mistral-large-latest",
+                    messages=messages
+                )
         except Exception:
             response = mistral_client.chat.complete(
                 model="mistral-large-latest",
@@ -330,7 +350,7 @@ def handle_mcp_request():
                                 "properties": {
                                     "arxiv_id": {"type": "string"},
                                     "question": {"type": "string", "default": "Provide a comprehensive analysis"},
-                                    "agent_id": {"type": "string", "default": "ag:01234567-89ab-cdef-0123-456789abcdef"}
+                                    "agent_id": {"type": "string", "default": ""}
                                 },
                                 "required": ["arxiv_id"]
                             }
@@ -344,7 +364,7 @@ def handle_mcp_request():
                                     "message": {"type": "string"},
                                     "paper_ids": {"type": "array", "items": {"type": "string"}},
                                     "conversation_history": {"type": "array"},
-                                    "agent_id": {"type": "string", "default": "ag:01234567-89ab-cdef-0123-456789abcdef"}
+                                    "agent_id": {"type": "string", "default": ""}
                                 },
                                 "required": ["message"]
                             }

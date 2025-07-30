@@ -145,8 +145,7 @@ Please provide a detailed analysis addressing the question while considering:
         
         response = mistral_client.chat.complete(
             model="mistral-small",
-            messages=[{"role": "user", "content": analysis_prompt}],
-            agent_id="ag:adba29bb:20250730:mistral-demo:8cea0852"
+            messages=[{"role": "user", "content": analysis_prompt}]
         )
         
         return {
@@ -200,8 +199,7 @@ Abstract: {abstract}
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": message}
-            ],
-            agent_id="ag:adba29bb:20250730:mistral-demo:8cea0852"
+            ]
         )
         
         return {
