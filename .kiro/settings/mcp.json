@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "arxiv-research": {
+      "command": "python",
+      "args": [
+        "arxiv-mcp-server-clean/arxiv_mcp_simple.py"
+      ],
+      "env": {
+        "MISTRAL_API_KEY": "your_mistral_api_key_here"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "search_arxiv_papers"
+      ]
+    }
+  }
+}
